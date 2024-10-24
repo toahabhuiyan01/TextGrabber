@@ -61,7 +61,7 @@ function App() {
   }
   const fullViewStyle = showFullView ? {
     height: '50rem',
-    width: '50rem'
+    width: '35rem'
   } : {}
 
   return (
@@ -70,11 +70,12 @@ function App() {
       gap={2}
       display='flex'
       flexDirection='column'
-      sx={{ width: '30rem', ...fullViewStyle }}
+      sx={{ width: '35rem', ...fullViewStyle }}
     >
       <Grid2
         display='flex'
         flexDirection='row'
+        justifyContent='space-between'
         gap={2}
       >
         <Grid2 
