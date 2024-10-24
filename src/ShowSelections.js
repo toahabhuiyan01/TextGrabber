@@ -1,4 +1,5 @@
-import { Button, Grid2 as Grid, Typography } from "@mui/material";
+import { Button, Grid2 as Grid, TextareaAutosize, Typography } from "@mui/material";
+import { useMemo } from "react";
 
 const MATCHES = [
     {
@@ -10,56 +11,64 @@ const MATCHES = [
         getText: (text) => `"${text}"`
     },
     {
-        name: "Board",
-        getText: (text) => `+${text}`
-    },
-    {
-        name: "P & E",
-        getText: (text) => `"${text}"\n[${text}]`
-    },
-    {
-        name: "P & B",
-        getText: (text) => `"${text}"\n+${text}`
-    },
-    {
-        name: "E & B",
-        getText: (text) => `[${text}]\n+${text}`
-    },
-    {
-        name: "All",
-        getText: (text) => `"${text}"\n[${text}]\n+${text}`
+        name: "Broad",
+        getText: (text) => text
     }
 
 ]
 
 export default function ShowSelections({ selectedTexts }) {
+    const matchingTexts = useMemo(
+        () => {
+            return MATCHES.map(match => {
+                return selectedTexts.map(text => match.getText(text)).join('\n')
+            })
+        },
+        [selectedTexts]
+    )
+
     return (
         <Grid>
             <h3>Stored Selected Texts:</h3>
-            {
-                selectedTexts.map((text, index) => (
-                    <CopyableText key={index} text={text} />
-                ))
-            }
+            <Grid
+                display='flex'
+                flexDirection='row'
+                gap={3}
+            >
+                {
+                    matchingTexts.map((text, index) => (
+                        <CopyableText
+                            key={index} 
+                            text={text} 
+                            index={index}
+                        />
+                    ))
+                }
+            </Grid>
         </Grid>
     )
 }
 
-function CopyableText({ text }) {
+function CopyableText({ text, index }) {
     return (
-        <Grid>
-            <Typography variant="body1">{text}</Typography>
-            {
-                MATCHES.map((match, index) => (
-                    <Button 
-                        key={index} 
-                        size="small"
-                        onClick={() => navigator.clipboard.writeText(match.getText(text))}
-                    >
-                        {match.name}
-                    </Button>
-                ))
-            }
+        <Grid
+            display='flex'
+            flexDirection='column'
+            gap={2}
+        >
+            <Typography>{MATCHES[index].name} Matching</Typography>
+            <TextareaAutosize
+                value={text}
+                readOnly
+            />
+
+            <Button
+                variant='outlined'
+                size="small"
+                onClick={() => navigator.clipboard.writeText(text)}
+            >
+                Copy
+            </Button>
         </Grid>
     )
 }
