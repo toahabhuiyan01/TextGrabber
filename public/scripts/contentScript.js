@@ -13,15 +13,16 @@ document.addEventListener('mouseup', () => {
 })
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  console.log(message)
     if (message.type === 'SHOULD_LISTEN') {
         shouldListen = message.shouldListen
     }
  
     if (message.type === 'CLEAR_SELECTIONS') {
-        document.getElementsByClassName('highlighted_lol').forEach((element) => {
-            element.style.backgroundColor = 'unset'
-            textArr = []
-        })
+        const docs = document.getElementsByClassName('highlighted__Text__lol')
+        for(const doc of docs) {
+            doc.style.backgroundColor = 'unset !important'
+        }
     }
 
     if (message.type === 'INIT') {
@@ -50,6 +51,7 @@ function highlightTextInNode(node, textToHighlight) {
         if (regex.test(part)) {
           // If the part matches, wrap it in a span
           const span = document.createElement("span");
+          span.className = "highlighted__Text__lol";
           span.style.backgroundColor = "yellow";
           span.textContent = part; // Use textContent to avoid HTML injection
           fragment.appendChild(span);
