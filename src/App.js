@@ -39,6 +39,11 @@ function App() {
         setSelectedTexts(result?.selectedTexts || []);
         emmitMessage({ type: "INIT", selectedTexts: result?.selectedTexts || [] });
       });
+
+
+    return () => {
+      emmitMessage({ type: 'SHOULD_LISTEN', shouldListen: false });
+    }
     }, []
   )
 
