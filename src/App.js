@@ -64,10 +64,6 @@ function App() {
       chrome.tabs.sendMessage(tabs[0].id, message);
   });
   }
-  const fullViewStyle = showFullView ? {
-    height: '50rem',
-    width: '35rem'
-  } : {}
 
   return (
     <Grid2
@@ -75,12 +71,13 @@ function App() {
       gap={2}
       display='flex'
       flexDirection='column'
-      sx={{ width: '35rem', ...fullViewStyle }}
+      sx={{ width: '100%', height: '100%' }}
     >
       <Grid2
         display='flex'
-        flexDirection='row'
+        flexDirection='col'
         justifyContent='space-between'
+        flexWrap='wrap'
         gap={2}
       >
         <Grid2 
@@ -95,34 +92,16 @@ function App() {
             onChange={() => setShouldListen(!shouldListen)}
           />
         </Grid2>
-
-        <Grid2 
-          display='flex'
-          flexDirection='row'
-          alignItems='center'
-          gap={2}
-        >
-          <Typography variant='caption'>Show FullView</Typography>
-          <Checkbox
-            checked={showFullView}
-            onChange={() => setShowFullView(!showFullView)}
-          />
-        </Grid2>
-
         <Button
           variant='outlined'
           color='error'
           size='small'
           onClick={clearSelections}
         >
-          Clear Selections
+          Clear All
         </Button>
       </Grid2>
-      {
-        showFullView && (
           <ShowSelections selectedTexts={selectedTexts} />
-        )
-      }
     </Grid2>
   );
 }

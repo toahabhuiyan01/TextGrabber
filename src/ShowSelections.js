@@ -28,23 +28,22 @@ export default function ShowSelections({ selectedTexts }) {
     )
 
     return (
-        <Grid>
-            <h3>Stored Selected Texts:</h3>
-            <Grid
-                display='flex'
-                flexDirection='row'
-                gap={3}
-            >
-                {
-                    matchingTexts.map((text, index) => (
-                        <CopyableText
-                            key={index} 
-                            text={text} 
-                            index={index}
-                        />
-                    ))
-                }
-            </Grid>
+        <Grid
+            display='flex'
+            flexDirection='row'
+            justifyContent='center'
+            flexWrap='wrap'
+            gap={3}
+        >
+            {
+                matchingTexts.map((text, index) => (
+                    <CopyableText
+                        key={index} 
+                        text={text} 
+                        index={index}
+                    />
+                ))
+            }
         </Grid>
     )
 }
