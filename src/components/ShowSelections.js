@@ -53,10 +53,14 @@ function CopyableText({ text, index }) {
         <Grid
             display='flex'
             flexDirection='column'
+            width='100%'
             gap={2}
         >
-            <Typography>{MATCHES[index].name} Matching</Typography>
+            <Typography variant="h6">{MATCHES[index].name} Match</Typography>
             <TextareaAutosize
+                style={{
+                    minWidth: '17rem'
+                }}
                 value={text}
                 readOnly
             />

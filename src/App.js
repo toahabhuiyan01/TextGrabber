@@ -1,109 +1,141 @@
 /*global chrome*/
 
-import { Button, Checkbox, Grid2, Typography } from '@mui/material';
+import { Button, Grid2, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import ShowSelections from './ShowSelections';
+import ShowSelections from './components/ShowSelections';
+import KeyWordList from './components/ShowKeywordList';
 
 function App() {
-  const [selectedTexts, setSelectedTexts] = useState([]);
-  const [shouldListen, setShouldListen] = useState(false);
-  const [showFullView, setShowFullView] = useState(false);
+	const [selectedTexts, setSelectedTexts] = useState([]);
+	const [shouldListen, setShouldListen] = useState(false);
+	const [listenerAdded, setListenerAdded] = useState(false);
+	const [showList, setShowList] = useState(false);
 
-  // Fetch stored texts from chrome storage
-  useEffect(() => {
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      if(!shouldListen) {
-        return
-      }
+	// Fetch stored texts from chrome storage
+	useEffect(() => {
+		if(listenerAdded) {
+			return
+		}
 
-      if (message.type === 'TEXT_SELECTED') {
+		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+			if(!shouldListen) {
+				return
+			}
 
-        // Store the selected text in the state
-        setSelectedTexts((texts) => {
-          const allTexts = [...texts, message.text]
-          chrome.storage.local.set({ selectedTexts: allTexts }, () => {
-            console.log('Selected text stored in background:', allTexts);
-          });
-          return allTexts;  
-        });
-      }
-    });
+			if (message.type === 'TEXT_SELECTED') {
+				// Store the selected text in the state
+				setSelectedTexts((texts) => {
+				const allTexts = [...texts, message.text]
+				chrome.storage.local.set({ selectedTexts: allTexts }, () => {
+					console.log('Selected text stored in background:', allTexts);
+				});
+					return allTexts;  
+				});
+			}
 
-    emmitMessage({ type: 'SHOULD_LISTEN', shouldListen });
-  }, [shouldListen]);
+			setListenerAdded(true)
+		});
 
-  useEffect(
-    () => {
-      chrome.storage.local.get({ selectedTexts: [] }, (result) => {
-        console.log('Fetched selected texts:', result?.selectedTexts);
-        setSelectedTexts(result?.selectedTexts || []);
-        emmitMessage({ type: "INIT", selectedTexts: result?.selectedTexts || [] });
-      });
+		emmitMessage({ type: 'SHOULD_LISTEN', shouldListen });
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [shouldListen]);
+
+	useEffect(
+		() => {
+			chrome.storage.local.get({ selectedTexts: [] }, (result) => {
+				console.log('Fetched selected texts:', result?.selectedTexts);
+				setSelectedTexts(result?.selectedTexts || []);
+				emmitMessage({ type: "INIT", selectedTexts: result?.selectedTexts || [] });
+			});
 
 
-    return () => {
-      emmitMessage({ type: 'SHOULD_LISTEN', shouldListen: false });
-    }
-    }, []
-  )
+			return () => {
+			emmitMessage({ type: 'SHOULD_LISTEN', shouldListen: false });
+			}
+		}, []
+	)
 
-  function clearSelections() {
-    chrome.storage.local.set({ selectedTexts: [] }, () => {
-      console.log('Selected text stored in background:', []);
-    });
+	function clearSelections() {
+		chrome.storage.local.set({ selectedTexts: [] }, () => {
+			console.log('Selected text stored in background:', []);
+		});
 
-    emmitMessage({ type: 'CLEAR_SELECTIONS' });
-    setSelectedTexts([]);
-  }
+		emmitMessage({ type: 'CLEAR_SELECTIONS' });
+		setSelectedTexts([]);
+	}
 
-  function emmitMessage(message) {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if(!tabs?.[0]?.id) {
-          return
-      }
-      chrome.tabs.sendMessage(tabs[0].id, message);
-  });
-  }
+	function emmitMessage(message) {
+		chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+			if(!tabs?.[0]?.id) {
+				return
+			}
+			chrome.tabs.sendMessage(tabs[0].id, message);
+		});
+	}
 
-  return (
-    <Grid2
-      p={2}
-      gap={2}
-      display='flex'
-      flexDirection='column'
-      sx={{ width: '100%', height: '100%' }}
-    >
-      <Grid2
-        display='flex'
-        flexDirection='col'
-        justifyContent='space-between'
-        flexWrap='wrap'
-        gap={2}
-      >
-        <Grid2 
-          display='flex'
-          flexDirection='row'
-          alignItems='center'
-          gap={2}
-        >
-          <Typography variant='caption'>Should Listen</Typography>
-          <Checkbox
-            checked={shouldListen}
-            onChange={() => setShouldListen(!shouldListen)}
-          />
-        </Grid2>
-        <Button
-          variant='outlined'
-          color='error'
-          size='small'
-          onClick={clearSelections}
-        >
-          Clear All
-        </Button>
-      </Grid2>
-          <ShowSelections selectedTexts={selectedTexts} />
-    </Grid2>
-  );
+	if(showList) {
+		return (
+			<KeyWordList
+				keywords={selectedTexts || []}
+				goBack={() => setShowList(false)}
+				setKeywords={setSelectedTexts}
+			/>
+		)
+	}
+
+	return (
+		<Grid2
+			p={2}
+			gap={4}
+			display='flex'
+			flexDirection='column'
+			sx={{ width: '100%', height: '100%' }}
+		>
+			<Grid2
+				display='flex'
+				flexDirection='row'
+				justifyContent='start'
+				flexWrap='wrap'
+				gap={1}
+			>
+				<Button
+					variant='outlined'
+					color='primary'
+					size='small'
+					onClick={() => setShouldListen(!shouldListen)}
+				>
+					<Typography variant='caption'>
+						{
+							shouldListen ? 'Stop Listening' : 'Start Listening'
+						}
+					</Typography>
+				</Button>
+				<Button
+					variant='outlined'
+					color='primary'
+					size='small'
+					onClick={() => setShowList(!showList)}
+				>
+					<Typography variant='caption'>
+						{
+							showList ? 'Hide List' : 'Show List'
+						}
+					</Typography>
+				</Button>
+				<Button
+					variant='outlined'
+					color='error'
+					size='small'
+					onClick={clearSelections}
+				>
+					<Typography variant='caption'>
+						Clear All
+					</Typography>
+				</Button>
+			</Grid2>
+			<ShowSelections selectedTexts={selectedTexts || []} />
+		</Grid2>
+	);
 }
 
 export default App;
