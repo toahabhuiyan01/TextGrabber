@@ -100,7 +100,7 @@ function App() {
 				>
 					<Typography variant='caption'>
 						{
-							shouldListen ? 'Stop Listening' : 'Start Listening'
+							shouldListen ? 'Stop' : 'Start'
 						}
 					</Typography>
 				</Button>
@@ -112,7 +112,7 @@ function App() {
 				>
 					<Typography variant='caption'>
 						{
-							showList ? 'Hide List' : 'Show List'
+							showList ? 'List' : 'List'
 						}
 					</Typography>
 				</Button>
