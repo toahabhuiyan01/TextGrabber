@@ -9,7 +9,7 @@ export default function KeyWordList({ keywords, goBack, setKeywords }) {
       flexDirection='column'
       gap={2}
     >
-        <Grid>
+        <Grid px={2}>
             <Button
                 variant='outlined'
                 color='primary'

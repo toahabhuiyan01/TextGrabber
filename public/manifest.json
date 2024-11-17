@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Text Selection Listener",
+  "name": "PPC Root Negative Keywords Tool",
   "version": "1.0",
   "description": "Listens for text selection on web pages and displays the selected text.",
   "permissions": [
@@ -17,7 +17,11 @@
     }
   ],
   "action": {
-    "default_icon": "logo192.png"
+    "default_icon": "logo.png"
+  },
+  "icons": {
+    "16": "logo.png",
+    "128": "logo.png"
   },
   "background": {
     "service_worker": "scripts/background.js"

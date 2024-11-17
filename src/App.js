@@ -1,41 +1,22 @@
 /*global chrome*/
 
 import { Button, Grid2, Typography } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import ShowSelections from './components/ShowSelections';
 import KeyWordList from './components/ShowKeywordList';
 
 function App() {
 	const [selectedTexts, setSelectedTexts] = useState([]);
 	const [shouldListen, setShouldListen] = useState(false);
-	const [listenerAdded, setListenerAdded] = useState(false);
 	const [showList, setShowList] = useState(false);
 
 	// Fetch stored texts from chrome storage
 	useEffect(() => {
-		if(listenerAdded) {
-			return
+		if(shouldListen) {
+			chrome.runtime.onMessage.addListener(messageListener);
+		} else {
+			chrome.runtime.onMessage.removeListener(messageListener);
 		}
-
-		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-			if(!shouldListen) {
-				return
-			}
-
-			if (message.type === 'TEXT_SELECTED') {
-				// Store the selected text in the state
-				setSelectedTexts((texts) => {
-				const allTexts = [...texts, message.text]
-				chrome.storage.local.set({ selectedTexts: allTexts }, () => {
-					console.log('Selected text stored in background:', allTexts);
-				});
-					return allTexts;  
-				});
-			}
-
-			setListenerAdded(true)
-		});
-
 		emmitMessage({ type: 'SHOULD_LISTEN', shouldListen });
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [shouldListen]);
@@ -54,6 +35,19 @@ function App() {
 			}
 		}, []
 	)
+
+	const messageListener = useCallback((message, sender, sendResponse) => {
+		if (message.type === 'TEXT_SELECTED') {
+			// Store the selected text in the state
+			setSelectedTexts((texts) => {
+				const allTexts = [...texts, message.text]
+				chrome.storage.local.set({ selectedTexts: allTexts }, () => {
+					console.log('Selected text stored in background:', allTexts);
+				});
+				return allTexts;  
+			});
+		}
+	}, [])
 
 	function clearSelections() {
 		chrome.storage.local.set({ selectedTexts: [] }, () => {
