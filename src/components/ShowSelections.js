@@ -34,6 +34,7 @@ export default function ShowSelections({ selectedTexts }) {
             justifyContent='center'
             flexWrap='wrap'
             gap={3}
+            marginBottom='2rem'
         >
             {
                 matchingTexts.map((text, index) => (

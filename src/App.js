@@ -1,9 +1,27 @@
 /*global chrome*/
 
-import { Button, Grid2, Typography } from '@mui/material';
+import { Button, Grid2, IconButton, Typography } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 import ShowSelections from './components/ShowSelections';
 import KeyWordList from './components/ShowKeywordList';
+import YT from './assets/youtube.svg'
+import LI from './assets/linkedin.svg'
+import Web from './assets/web.png'
+
+const SOCIAL_LINKS = [
+	{
+		url: 'https://www.youtube.com/@iambarkat/videos',
+		icon: YT
+	},
+	{
+		url: 'https://www.linkedin.com/in/iambarkat/',
+		icon: LI
+	},
+	{
+		url: 'https://iambarkat.com/',
+		icon: Web
+	}
+]
 
 function App() {
 	const [selectedTexts, setSelectedTexts] = useState([]);
@@ -79,55 +97,107 @@ function App() {
 
 	return (
 		<Grid2
-			p={2}
-			gap={4}
 			display='flex'
 			flexDirection='column'
-			sx={{ width: '100%', height: '100%' }}
+			justifyContent='start'
+			width='100%'
+			height='100%'
+			p={0}
+			m={0}
 		>
+			<Grid2
+				p={2}
+				gap={4}
+				display='flex'
+				flexDirection='column'
+				sx={{ width: '100%', height: '100%' }}
+			>
+				<Grid2
+					display='flex'
+					flexDirection='row'
+					justifyContent='start'
+					flexWrap='wrap'
+					gap={1}
+				>
+					<Button
+						variant='outlined'
+						color='primary'
+						size='small'
+						onClick={() => setShouldListen(!shouldListen)}
+					>
+						<Typography variant='caption'>
+							{
+								shouldListen ? 'Stop' : 'Start'
+							}
+						</Typography>
+					</Button>
+					<Button
+						variant='outlined'
+						color='primary'
+						size='small'
+						onClick={() => setShowList(!showList)}
+					>
+						<Typography variant='caption'>
+							{
+								showList ? 'List' : 'List'
+							}
+						</Typography>
+					</Button>
+					<Button
+						variant='outlined'
+						color='error'
+						size='small'
+						onClick={clearSelections}
+					>
+						<Typography variant='caption'>
+							Clear All
+						</Typography>
+					</Button>
+				</Grid2>
+				<ShowSelections selectedTexts={selectedTexts || []} />
+			</Grid2>
+		
 			<Grid2
 				display='flex'
 				flexDirection='row'
-				justifyContent='start'
-				flexWrap='wrap'
-				gap={1}
+				justifyContent='center'
+				alignItems='center'
+				position='fixed'
+				bottom={0}
+				left={0}
+				gap={2}
+				height='32px'
+				width='100vw'
+				sx={{
+					backgroundColor: '#000',
+					width: '100%',
+					px: '20px'
+				}}
 			>
-				<Button
-					variant='outlined'
-					color='primary'
-					size='small'
-					onClick={() => setShouldListen(!shouldListen)}
+				<Typography
+					variant='subtitle2'
+					color='white'
 				>
-					<Typography variant='caption'>
-						{
-							shouldListen ? 'Stop' : 'Start'
-						}
-					</Typography>
-				</Button>
-				<Button
-					variant='outlined'
-					color='primary'
-					size='small'
-					onClick={() => setShowList(!showList)}
-				>
-					<Typography variant='caption'>
-						{
-							showList ? 'List' : 'List'
-						}
-					</Typography>
-				</Button>
-				<Button
-					variant='outlined'
-					color='error'
-					size='small'
-					onClick={clearSelections}
-				>
-					<Typography variant='caption'>
-						Clear All
-					</Typography>
-				</Button>
+					Find Us On:
+				</Typography>
+				{
+					SOCIAL_LINKS.map((link, index) => (
+						<a
+						 	href={link.url}
+							key={index}
+							target='_blank'
+							rel='noreferrer'
+						>
+							<img
+								src={link.icon}
+								alt='social'
+								height={30}
+								width={30}
+							/>
+						</a>
+					))
+				}
 			</Grid2>
-			<ShowSelections selectedTexts={selectedTexts || []} />
 		</Grid2>
 	);
 }
