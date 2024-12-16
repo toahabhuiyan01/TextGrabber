@@ -5,9 +5,7 @@
   "description": "Listens for text selection on web pages and displays the selected text.",
   "permissions": [
     "activeTab",
-    "scripting",
     "storage",
-    "windows",
     "sidePanel"
   ],
   "content_scripts": [
